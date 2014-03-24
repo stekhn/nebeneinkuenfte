@@ -21,24 +21,23 @@ require 'json'
 # Get the URL for all the A-Z pages
 alphabeticalList = []
 # Exclude the Q and X pages, because they don't exist
-(('A'..'Z').to_a-['Q','X']).each do |b|
+(('M'..'M').to_a-['Q','X']).each do |b|
 	# Local copy of the MP index
-	puts "http://localhost/nebeneinkuenfte/www.bundestag.de/bundestag/abgeordnete18/biografien/#{b}/"
 	alphabeticalList << "http://localhost/nebeneinkuenfte/www.bundestag.de/bundestag/abgeordnete18/biografien/#{b}/"
 	# alphabeticalList << "http://www.bundestag.de/bundestag/abgeordnete18/biografien/#{b}/"
 end
 
 # Get the individual profile URLs of all members of the parliament (MPs).
-
 profileUrls = []
-
 alphabeticalList.each do |url|
+	# Use nokogiri to get the URL from the HTML href attribute
 	doc = Nokogiri::HTML(open(url))
 	urlList = doc.css('ul.standardLinkliste')
 	urlList.css('li a').each do |l|
 		profileUrls << url+l['href']
 	end
 	sleep 1
+	# Log number of found MPs
 	puts "Getting URLs from ..."+url[-3,2]+" ...found #{profileUrls.length}"
 end
 
@@ -88,14 +87,16 @@ profileUrls.each do |url|
 
 		#Checks if the declaration contains "step x" and "monthly"
 		for i in 1..11
-			if str =~ /Stufe #{i}/ && str =~ /monatlich/
+			if str.match(/\bStufe #{i}\b/) && str.match(/monatlich/)
+				puts str
 				member[:"s#{i}m"] += 1
 			end
 		end
 
 		#Checks if the declaration contains "step x" and "annual" or "year"
  		for j in 1..11
-			if str =~ /Stufe #{j}/ && (str =~ /jährlich/ || str =~ /2009/ || str =~ /2010/ || str =~ /2011/ || str =~ /2012/ || str =~ /2013/ || str =~ /2014/)
+			if str.match(/\bStufe #{j}\b/) && str.match(/jährlich|(20(09|10|11|12|13|14))/)
+				puts str
 				member[:"s#{j}j"] += 1
 			end
 		end
