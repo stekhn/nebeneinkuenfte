@@ -20,11 +20,12 @@ require 'json'
 
 # Get the URL for all the A-Z pages
 alphabeticalList = []
+# Sets the range for the scraper. For testing purposes you can set the range To 'A'..'A'
 # Exclude the Q and X pages, because they don't exist
-(('M'..'M').to_a-['Q','X']).each do |b|
+(('A'..'Z').to_a-['Q','X']).each do |b|
 	# Local copy of the MP index
-	alphabeticalList << "http://localhost/nebeneinkuenfte/www.bundestag.de/bundestag/abgeordnete18/biografien/#{b}/"
-	# alphabeticalList << "http://www.bundestag.de/bundestag/abgeordnete18/biografien/#{b}/"
+	# alphabeticalList << "http://localhost/nebeneinkuenfte/www.bundestag.de/bundestag/abgeordnete18/biografien/#{b}/"
+	alphabeticalList << "http://www.bundestag.de/bundestag/abgeordnete18/biografien/#{b}/"
 end
 
 # Get the individual profile URLs of all members of the parliament (MPs).
@@ -95,7 +96,7 @@ profileUrls.each do |url|
 
 		#Checks if the declaration contains "step x" and "annual" or "year"
  		for j in 1..11
-			if str.match(/\bStufe #{j}\b/) && str.match(/jährlich|(20(09|10|11|12|13|14))/)
+			if str.match(/\bStufe #{j}\b/) && str.match(/\bjährlich\b|(\s20(09|10|11|12|13|14))/)
 				puts str
 				member[:"s#{j}j"] += 1
 			end
